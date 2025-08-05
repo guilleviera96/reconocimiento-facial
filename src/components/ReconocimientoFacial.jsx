@@ -8,7 +8,7 @@ const ReconocimientoFacial = ({ onSuccess }) => {
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [location, setLocation] = useState(null);
   const [usuarioDescriptor, setUsuarioDescriptor] = useState(null);
-  const [nombreUsuario, setNombreUsuario] = useState(""); // nuevo estado
+  const [nombreUsuario, setNombreUsuario] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,7 +17,6 @@ const ReconocimientoFacial = ({ onSuccess }) => {
       await tf.ready();
 
       const MODEL_URL = "/models";
-      console.log("Inicio carga modelos...");
       try {
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
@@ -33,7 +32,7 @@ const ReconocimientoFacial = ({ onSuccess }) => {
       }
 
       try {
-        const imagePath = "/usuarios/guille.jpeg"; // nombre del archivo
+        const imagePath = "/usuarios/guille.jpeg";
         const img = await faceapi.fetchImage(imagePath);
         const detection = await faceapi
           .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
@@ -43,12 +42,10 @@ const ReconocimientoFacial = ({ onSuccess }) => {
         if (detection) {
           setUsuarioDescriptor(detection.descriptor);
 
-          // Extraer "guille" y capitalizar → "Guille"
+          // Extraer y capitalizar nombre desde el archivo
           const fileName = imagePath.split("/").pop().split(".")[0];
           const capitalized = fileName.charAt(0).toUpperCase() + fileName.slice(1);
           setNombreUsuario(capitalized);
-
-          console.log(`Imagen de referencia cargada: ${capitalized}`);
         } else {
           alert("No se pudo cargar el rostro de referencia.");
           setLoading(false);
@@ -114,10 +111,18 @@ const ReconocimientoFacial = ({ onSuccess }) => {
       console.log("Distancia:", distancia);
 
       if (distancia < 0.4) {
-        alert(`✅ Bienvenido ${nombreUsuario}`);
+        const ahora = new Date();
+        const hora = ahora.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        alert(`✅ Bienvenido ${nombreUsuario}\n🕒 Llegaste a las ${hora}`);
+
         onSuccess({
           location,
           faceDescriptor: liveDetection.descriptor,
+          horaLlegada: hora,
         });
       } else {
         alert("❌ Rostro no coincide.");
