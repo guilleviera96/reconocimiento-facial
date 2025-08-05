@@ -11,7 +11,7 @@ const ReconocimientoFacial = ({ onSuccess }) => {
 
   useEffect(() => {
     const loadModels = async () => {
-      const MODEL_URL = "/models"; // Asegúrate que estén en public/models
+      const MODEL_URL = "/models"; // Asegurate que estén en public/models
       console.log("Inicio carga modelos...");
       try {
         await Promise.all([
@@ -125,7 +125,13 @@ const ReconocimientoFacial = ({ onSuccess }) => {
             screenshotFormat="image/jpeg"
             width={320}
             height={240}
-            videoConstraints={{ facingMode: "user" }}
+            onUserMedia={() => console.log("✅ Cámara iniciada correctamente")}
+            onUserMediaError={(error) => {
+              console.error("❌ Error accediendo a la cámara:", error);
+              alert(
+                "No se pudo acceder a la cámara. Por favor, revisá los permisos y el navegador."
+              );
+            }}
           />
         </div>
       </div>
