@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
+import * as tf from "@tensorflow/tfjs";
 
 const ReconocimientoFacial = ({ onSuccess }) => {
   const webcamRef = useRef(null);
@@ -11,8 +12,10 @@ const ReconocimientoFacial = ({ onSuccess }) => {
 
   useEffect(() => {
     const loadModels = async () => {
-      const MODEL_URL = "/models"; // Asegurate que estén en public/models
-      console.log("Inicio carga modelos...");
+      await tf.setBackend("cpu");
+      await tf.ready();
+
+      const MODEL_URL = "/models";
       try {
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
@@ -129,7 +132,7 @@ const ReconocimientoFacial = ({ onSuccess }) => {
             onUserMediaError={(error) => {
               console.error("❌ Error accediendo a la cámara:", error);
               alert(
-                "No se pudo acceder a la cámara. Por favor, revisá los permisos y el navegador."
+                "No se pudo acceder a la cámara. Revisá permisos y navegador."
               );
             }}
           />
