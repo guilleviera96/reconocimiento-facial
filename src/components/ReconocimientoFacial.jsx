@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
 import * as tf from "@tensorflow/tfjs";
@@ -8,7 +8,7 @@ const ReconocimientoFacial = ({ onSuccess }) => {
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [location, setLocation] = useState(null);
   const [usuarioDescriptor, setUsuarioDescriptor] = useState(null);
-  const [nombreUsuario, setNombreUsuario] = useState("");
+  const [nombreUsuario, setNombreUsuario] = useState(""); // NUEVO estado
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,10 +42,13 @@ const ReconocimientoFacial = ({ onSuccess }) => {
         if (detection) {
           setUsuarioDescriptor(detection.descriptor);
 
-          // Extraer y capitalizar nombre desde el archivo
+          // Extraer y capitalizar nombre desde archivo
           const fileName = imagePath.split("/").pop().split(".")[0];
-          const capitalized = fileName.charAt(0).toUpperCase() + fileName.slice(1);
+          const capitalized =
+            fileName.charAt(0).toUpperCase() + fileName.slice(1);
           setNombreUsuario(capitalized);
+
+          console.log(`Imagen cargada y procesada de: ${capitalized}`);
         } else {
           alert("No se pudo cargar el rostro de referencia.");
           setLoading(false);
@@ -132,7 +135,9 @@ const ReconocimientoFacial = ({ onSuccess }) => {
 
   return (
     <div className="bg-white shadow-lg p-6 rounded-lg w-full max-w-md text-center">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Verificación Facial</h2>
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        Verificación Facial
+      </h2>
 
       <div className="flex justify-center mb-4">
         <div className="border-4 border-blue-500 rounded-md overflow-hidden">
@@ -142,16 +147,22 @@ const ReconocimientoFacial = ({ onSuccess }) => {
             screenshotFormat="image/jpeg"
             width={320}
             height={240}
-            onUserMedia={() => console.log("✅ Cámara iniciada correctamente")}
+            onUserMedia={() =>
+              console.log("✅ Cámara iniciada correctamente")
+            }
             onUserMediaError={(error) => {
               console.error("❌ Error accediendo a la cámara:", error);
-              alert("No se pudo acceder a la cámara. Revisá permisos y navegador.");
+              alert(
+                "No se pudo acceder a la cámara. Revisá permisos y navegador."
+              );
             }}
           />
         </div>
       </div>
 
-      {loading && <p className="text-gray-500">Cargando modelos y datos...</p>}
+      {loading && (
+        <p className="text-gray-500">Cargando modelos y datos...</p>
+      )}
 
       {!loading && modelsLoaded && usuarioDescriptor && (
         <button
